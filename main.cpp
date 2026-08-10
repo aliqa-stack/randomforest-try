@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cmath>
 #include <cstdlib>
+//still dont understand the formula
 
 
 //day2 of learning 
@@ -41,6 +42,8 @@ double gini(std::vector<int> labels){
 
 }
 
+
+//lalieerrr ie function
 bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex, double& treshold, int& numfeaturesTocon){
     std::vector<int> indices (data.size());
     int sqrtFeature = std::sqrt(numfeaturesTocon);
