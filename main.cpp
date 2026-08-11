@@ -3,10 +3,12 @@
 #include <cmath>
 #include <cmath>
 #include <cstdlib>
-//still dont understand the formula
+//still dont understand the formula2
+
+//lierrr kneh
 
 
-//day2 of learning 
+//day3 of learning 
 struct Node{
     bool isLeaf = false;
     int Featureindex;
@@ -24,7 +26,7 @@ struct DecisionTree{
     int numFeaturesToCon;
 }
 
-double gini(std::vector<int> labels){
+double gini(int& labels){
     std::map<int,int> count;
 
     for(auto& label ; labels){
@@ -42,12 +44,23 @@ double gini(std::vector<int> labels){
 
 }
 
+double weightGini(std::vector<int>& Rlabels, std::vector<int>& Llabels){
+    int totalSize = Rlabels.size() + Llabels.size();
+    double leftgini = gini(Llabels);
+    double rightgini = gini(Rlabels);
+
+
+    double w1 = (double)leftgini / totalSize;
+    double w2 = (double)rightgini / totalSize;
+    
+    return w1 * leftgini * w2 * rightgini
+}
+
 
 //lalieerrr ie function
-bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex, double& treshold, int& numfeaturesTocon){
+bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex,
+     double& treshold, int& bestFeatureIndex, std::vector<int>& BestRight,  std::vector<int>& BestLeft){
     std::vector<int> indices (data.size());
-    int sqrtFeature = std::sqrt(numfeaturesTocon);
-    double treshold = 0.0;
     bool BestSplit = false;
     double BestGini = std::numeric_limits<double>::max();
 
@@ -65,6 +78,19 @@ bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex
                     }
                 }
             if(left_idx.empty() || rigth_idx.empty()) continue;
+            std::vector<int>& RightLabels, LeftLabels;
+            for(auto idx : rigth_idx) RightLabels.push_back(labels[idx]);
+            for(auto idx : left_idx) LeftLabels.push_back(labels[idx]);
+
+            double g = weightgini(RightLabels, Leftlabels)
+            if(g < BestGini){
+                treshold = candidate;
+                BestRigth = right_idx;
+                BestLeft = left_idx;
+                bestFeatureIndex = feat;
+                BestGini = g;
+                BestSplit = true;
+            }
         }
 
     }
