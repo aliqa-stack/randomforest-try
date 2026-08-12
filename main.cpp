@@ -1,14 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include <cmath>
 #include <cstdlib>
+#include <random>
+#include <algorithm>
 //still dont understand the formula2
 
 //lierrr kneh
+//istigfar 
 
 
-//day3 of learning 
+//day4 of learning 
 struct Node{
     bool isLeaf = false;
     int Featureindex;
@@ -50,15 +52,15 @@ double weightGini(std::vector<int>& Rlabels, std::vector<int>& Llabels){
     double rightgini = gini(Rlabels);
 
 
-    double w1 = (double)leftgini / totalSize;
-    double w2 = (double)rightgini / totalSize;
+    double w1 = (double)Llabels.size() / totalSize;
+    double w2 = (double)Rlabels.size() / totalSize;
     
-    return w1 * leftgini * w2 * rightgini
+    return w1 * leftgini + w2 * rightgini
 }
 
 
 //lalieerrr ie function
-bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex,
+bool split(std::vector<std::vector<double>>& data, std::vector<int>& Featureindex,
      double& treshold, int& bestFeatureIndex, std::vector<int>& BestRight,  std::vector<int>& BestLeft){
     std::vector<int> indices (data.size());
     bool BestSplit = false;
@@ -97,6 +99,82 @@ bool split(std::vector<std::vector<double>> data, std::vector<int>& Featureindex
      
     return BestSplit;
 
+}
+
+std::vector<int> pickRandomFeatures(int totalFeatures) {
+    // 1. buat list semua index fitur: [0, 1, 2, ..., totalFeatures-1]
+    std::vector<int> allFeatures(totalFeatures);
+    std::iota(allFeatures.begin(), allFeatures.end(), 0);
+
+    // 2. acak urutannya
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::shuffle(allFeatures.begin(), allFeatures.end(), gen);
+
+    // 3. hitung berapa banyak fitur yang mau diambil
+    int m = std::max(1, (int)std::sqrt(totalFeatures));  // minimal 1, jaga-jaga kalau totalFeatures kecil
+
+    // 4. ambil m elemen pertama dari hasil shuffle
+    std::vector<int> selected(allFeatures.begin(), allFeatures.begin() + m);
+
+    return selected;
+}
+
+int majorityClass(std::vector<int>& labels, std::vector<int>& indices){
+    std::map<int, int> count;
+    for(int idx : indices){
+        count[labels[idx]];
+    }
+
+    int BestCount = -1;
+    int Bestclass = -1;
+
+    for(auto [cls, c] : count){
+        if(c > Bestcount) BestCount = c; Bestclass = cls;
+    }
+
+    return Bestclass;
+}
+
+bool isPure(std::vector<int>& labels, std:vector<int>& indices){
+    for(size_t i = 0 ; i < indices.size(); i++){
+        if(labels[indices[i]] != labels[indices[0]]) return false;
+    }
+
+    return true;
+}
+
+Node* BuildTree(std::vector<std::vector<double>>& data,
+     int depths, int maxDepth, std::vector<int>& labels, std::vector<int>& indices, int minSampleSplit){
+    Node* node = new Node();
+    bool found = split(data, Featureindex, treshold, bestFeatureindex, BestRight, BestLeft);
+
+    std::vectro<int> featureSubset = pickRandomFeatures(data[0].size());
+    int Besfeaturs; double Besttreshold;
+    std::vector<int> leftIdx, rightIdx;
+    size_t Samplecount = indices.size();
+    bool stop = (depths > maxDepth || Samplecount < (size_t)minsSampleSplit);
+
+        if(stop){
+            node-> isLeaf = true;
+            node->predictedClass = majorityClass(labels, indices);
+            
+            return node;
+            
+        }
+        if(!found){
+            node-> isleaf = true;
+            //split data nya
+        
+        }
+
+    node->isLeaf = false;
+    node->featureIndex = bestFeature;
+    node->threshold = bestThreshold;
+    node->left  = buildTree(data, labels, leftIdx,  depth + 1, maxDepth, minSamplesSplit);
+    node->right = buildTree(data, labels, rightIdx, depth + 1, maxDepth, minSamplesSplit);
+
+    return node;
 }
 
 
