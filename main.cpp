@@ -10,7 +10,7 @@
 //istigfar 
 
 
-//day4 of learning 
+//day5 of learning 
 struct Node{
     bool isLeaf = false;
     int Featureindex;
@@ -26,7 +26,17 @@ struct DecisionTree{
     int maxDepths;
     int minSampleSplit;
     int numFeaturesToCon;
-}
+};
+
+struct RandomForest{
+    std::vector<DecisionTree> trees;
+    int numTrees;
+};
+
+struct Datapoint{
+    std::vector<double> features;
+    int labels;
+};
 
 double gini(int& labels){
     std::map<int,int> count;
@@ -153,7 +163,7 @@ Node* BuildTree(std::vector<std::vector<double>>& data,
     int Besfeaturs; double Besttreshold;
     std::vector<int> leftIdx, rightIdx;
     size_t Samplecount = indices.size();
-    bool stop = (depths > maxDepth || Samplecount < (size_t)minsSampleSplit);
+    bool stop = (depths > maxDepth || Samplecount < (size_t)minsSampleSplit || isPure(labels, indices));
 
         if(stop){
             node-> isLeaf = true;
@@ -165,6 +175,10 @@ Node* BuildTree(std::vector<std::vector<double>>& data,
         if(!found){
             node-> isleaf = true;
             //split data nya
+            node->predictedClass = majorityClass(labels, indices);
+
+
+            return node;
         
         }
 
@@ -176,6 +190,43 @@ Node* BuildTree(std::vector<std::vector<double>>& data,
 
     return node;
 }
+
+std::vector<Datapoint> bootsrap(std::vector<Datapoint>& data){
+    int n = data.size();
+    std::vector<Datapoint> boots;
+    for(size_t i = 0 ; i < n; i++){
+        int idx = rand() % n;
+        boots.push_back(data[idx]);
+    }
+    return boots;
+}
+
+void traintrees(Randomforest& forest, std::vector<Datapoint>& data){
+    int depths; int maxDepth
+    std::vector<double> indices;
+    std::vector<int> labels;
+    int MinsampleSplit;
+    for(int i = 0; i < forest.numTrees; i++){
+        auto sample = bootsrap(data);
+        DecisionTree trees;
+        trees.root = BuildTree(data, depths, maxDepth, labels, indices, MinsampleSplit);
+        forest.push_back(trees)
+    }
+}
+
+int predictSingleTrees(Node& node, std::vector<double>& sample){
+    if(node-> isLeaf){
+      return  node->predictedClass;
+    }
+
+    if(sample[node->FeatureIndex] < node->treshold){
+      return  predictSingleTrees(node->left, sample)
+    }else {
+        return  predictSingleTrees(node->right, sample)
+
+    }
+}
+
 
 
 
