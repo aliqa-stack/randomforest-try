@@ -4,13 +4,15 @@
 #include <cstdlib>
 #include <random>
 #include <algorithm>
+#include <map>
 //still dont understand the formula2
+//hanya allah yang tau maksud dari kode ini
 
 //lierrr kneh
 //istigfar 
 
 
-//day5 of learning 
+//day6 of learning 
 struct Node{
     bool isLeaf = false;
     int Featureindex;
@@ -191,7 +193,7 @@ Node* BuildTree(std::vector<std::vector<double>>& data,
     return node;
 }
 
-std::vector<Datapoint> bootsrap(std::vector<Datapoint>& data){
+std::vector<Datapoint> bootsrap(std::vector<std::vector<double>>& data){
     int n = data.size();
     std::vector<Datapoint> boots;
     for(size_t i = 0 ; i < n; i++){
@@ -201,29 +203,35 @@ std::vector<Datapoint> bootsrap(std::vector<Datapoint>& data){
     return boots;
 }
 
-void traintrees(Randomforest& forest, std::vector<Datapoint>& data){
-    int depths; int maxDepth
-    std::vector<double> indices;
-    std::vector<int> labels;
-    int MinsampleSplit;
-    for(int i = 0; i < forest.numTrees; i++){
+void traintrees(std::vector<std::vector<double>>& data,
+     int depths, int maxDepth, std::vector<int>& labels, std::vector<int>& indices, int minSampleSplit){
+        std::vector<Randomforest*> forest;
+        for(int i = 0; i < forest.numTrees; i++){
         auto sample = bootsrap(data);
-        DecisionTree trees;
-        trees.root = BuildTree(data, depths, maxDepth, labels, indices, MinsampleSplit);
+        DecisionTree* trees;
+        trees.root = BuildTree(data, depths, maxDepth, labels, indices, minsampleSplit);
         forest.push_back(trees)
     }
 }
 
-int predictSingleTrees(Node& node, std::vector<double>& sample){
-    if(node-> isLeaf){
+int predictSingleTrees(Node* node, std::vector<double>& sample){
+    if(node->isLeaf){
       return  node->predictedClass;
     }
 
-    if(sample[node->FeatureIndex] < node->treshold){
-      return  predictSingleTrees(node->left, sample)
+    if(sample[node->Featureindex] < node->treshold){
+      return  predictSingleTrees(node->left, sample);
     }else {
-        return  predictSingleTrees(node->right, sample)
+        return  predictSingleTrees(node->rigth, sample);
 
+    }
+}
+
+int predict(RandomForest& forest, Datapoint& x){
+    std::map<int, int> votes;
+    for(auto& tree : forest.trees){
+        int pred = predictSingleTrees(tree.root, x)
+        votes[pred]++;
     }
 }
 
